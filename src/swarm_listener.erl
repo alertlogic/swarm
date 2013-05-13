@@ -83,7 +83,12 @@ acceptor(LPid, Name, LSock, Transport, LogModule, {M, F, A}) ->
     LPid ! accepted,
     case Accept of
         {ok, S} ->
-            erlang:apply(M, F, [S, Name, Transport, get_info(Transport, S)] ++ A);
+            try
+                erlang:apply(M, F, [S, Name, Transport, get_info(Transport, S)] ++ A)
+            catch
+                throw:{ok, _} ->
+                    ok
+            end;
         {error, closed} ->
             ?LOG(LogModule, debug, "~s Transport:accept received {error, closed}", [Name]),
             ok;
