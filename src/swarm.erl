@@ -52,6 +52,12 @@ child_spec(Name, AcceptorCount, Transport, TransOpts, {M, F, A}) ->
      permanent, 5000, worker, [swarm_listener]}.
 
 
+-spec add_post_connection_hook(function()) -> ok.
+add_post_connection_hook(Fun) when is_function(Fun) ->
+    put(swarm_post_connection_hook, Fun),
+    ok.
+
+
 %% Start/stop/utility API
 
 start() ->
