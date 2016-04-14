@@ -88,6 +88,8 @@ acceptor(LPid, Name, LSock, Transport, LogModule, {M, F, A}) ->
             catch
                 throw:{ok, _} ->
                     ok
+            after
+                post_connection_hook()
             end;
         {error, closed} ->
             ?LOG(LogModule, debug, "~s Transport:accept received {error, closed}", [Name]),
@@ -98,6 +100,23 @@ acceptor(LPid, Name, LSock, Transport, LogModule, {M, F, A}) ->
     end,
     %% eprof:stop_profiling(),
     %% eprof:analyze(),
+    ok.
+
+
+post_connection_hook() ->
+    post_connection_hook(get(swarm_post_connection_hook)).
+
+post_connection_hook(undefined) ->
+    ok;
+post_connection_hook(Fun) when is_function(Fun) ->
+    try
+        Fun()
+    catch
+        _:_ ->
+            ok
+    end,
+    ok;
+post_connection_hook(_) ->
     ok.
 
 
