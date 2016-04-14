@@ -84,17 +84,12 @@ acceptor(LPid, Name, LSock, Transport, LogModule, {M, F, A}) ->
     case Accept of
         {ok, S} ->
             try
-                erlang:apply(M, F, [S, Name, Transport, get_info(Transport, S)] ++ A),
-                post_connection_hook()
+                erlang:apply(M, F, [S, Name, Transport, get_info(Transport, S)] ++ A)
             catch
-                _:Reason ->
-                    post_connection_hook(),
-                    case Reason of
-                        {ok, _} ->
-                            ok;
-                        _ ->
-                            throw(Reason)
-                    end
+                throw:{ok, _} ->
+                    ok
+            after
+                post_connection_hook()
             end;
         {error, closed} ->
             ?LOG(LogModule, debug, "~s Transport:accept received {error, closed}", [Name]),
