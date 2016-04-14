@@ -115,6 +115,8 @@ post_connection_hook(Fun) when is_function(Fun) ->
         _:_ ->
             ok
     end,
+    ok;
+post_connection_hook(_) ->
     ok.
 
 
