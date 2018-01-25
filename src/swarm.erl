@@ -54,7 +54,12 @@ child_spec(Name, AcceptorCount, Transport, TransOpts, {M, F, A}) ->
 
 -spec add_post_connection_hook(function()) -> ok.
 add_post_connection_hook(Fun) when is_function(Fun) ->
-    put(swarm_post_connection_hook, Fun),
+    case get(swarm_post_connection_hook) of
+        undefined ->
+            put(swarm_post_connection_hook, [Fun]);
+        L ->
+            put(swarm_post_connection_hook, [Fun | L])
+    end,
     ok.
 
 
