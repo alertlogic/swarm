@@ -109,6 +109,15 @@ post_connection_hook() ->
 post_connection_hook(undefined) ->
     ok;
 post_connection_hook(Fun) when is_function(Fun) ->
+    invoke_post_connection_hook(Fun);
+post_connection_hook(L) when is_list(L) ->
+    [invoke_post_connection_hook(Fun) || Fun <- L],
+    ok;
+post_connection_hook(_) ->
+    ok.
+
+
+invoke_post_connection_hook(Fun) when is_function(Fun) ->
     try
         Fun()
     catch
@@ -116,7 +125,7 @@ post_connection_hook(Fun) when is_function(Fun) ->
             ok
     end,
     ok;
-post_connection_hook(_) ->
+invoke_post_connection_hook(_) ->
     ok.
 
 
